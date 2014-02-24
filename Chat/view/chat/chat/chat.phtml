@@ -1,0 +1,136 @@
+<h1>Chat</h1>
+<div id="status">
+
+</div>
+<?php  if( !empty($mensagens) ){ ?>
+<table class="table table-bordered active" id="registros">
+	<thead>
+		<tr>
+			<td>Remetente</td>
+			<td>Destinatário</td>
+			<td>Mensagem</td>
+			<td>Data e hora</td>
+		</tr>
+	</thead>
+	<tbody id="content_table">
+	<?php foreach($mensagens as $m){  ?>
+	<tr>
+		<td><?php echo ($m['id_usuario_remetente'] == $eu->id_usuario ? $eu->apelido : $outro->apelido); ?></td>
+		<td><?php echo ($m['id_usuario_destinatario'] == $eu->id_usuario ? $eu->apelido : $outro->apelido); ?></td>
+		<td><?php echo $m['mensagem']; ?></td>
+		<td><?php echo $m['data_envio']; ?></td>
+	</tr>
+	<?php } ?>
+	</tbody>
+</table>
+<?php } ?>
+
+<div class="clear: both;" id="mensagens">
+<?php
+$form = $this->form;
+$form->setAttribute('action',$this->url('chat',array('action' => 'mensagem')));
+$form->prepare();
+
+echo $this->form()->openTag($form);
+
+$form->get('id_usuario_remetente')->setValue($eu->id_usuario);
+echo $this->formHidden($form->get('id_usuario_remetente'));
+
+$form->get('id_usuario_destinatario')->setValue($outro->id_usuario);
+echo $this->formHidden($form->get('id_usuario_destinatario'));
+
+echo $this->formLabel()->openTag($form->get('mensagem'));
+echo $this->formRow($form->get('mensagem'));
+
+echo $this->formElementErrors($form->get('mensagem'));
+
+echo $this->formLabel()->closeTag($form->get('mensagem'));
+
+echo $this->formLabel()->openTag($form->get('enviar'));
+
+echo $this->formSubmit($form->get('enviar'));
+
+echo $this->formLabel()->closeTag($form->get('enviar'));
+
+
+echo $this->form()->closeTag();
+?>
+</div>
+
+<script>
+require(["dojo/dom", "dojo/on", "dojo/request", "dojo/dom-form","dojo/json","dojo/_base/array","dojo/query","dojo","dojo/dom-construct"],
+	    function(dom, on, request, domForm, parser, ArrayParser, qr,dojo,c){
+	 
+	        var form = dom.byId('envia_mensagem');
+	 
+	        // Attach the onsubmit event handler of the form
+	        on(form, "submit", function(evt){
+	 
+	            // prevent the page from navigating after submit
+	            evt.stopPropagation();
+	            evt.preventDefault();
+	 
+	            // Post the data to the server
+	            request.post("/chat/mensagem", {
+	                // Send the username and password
+	                data: domForm.toObject("envia_mensagem"),
+	                // Wait 2 seconds for a response
+	                timeout: 2000,
+	                handleAs: 'json'
+	 
+	            }).then(function(response){
+		           
+		            var json = parser.parse(response);
+		            if(json.status == 'NOK'){
+			            
+		            	var msg = "Deu merda. Reveja campos";
+		            	dom.byId('status').innerHTML = msg;
+			    	}else{
+						var ht = "<tr><td>" + json.mensagem.usuario_remetente + "</td><td>" + json.mensagem.usuario_destinatario + "</td><td>"+ json.mensagem.mensagem + "</td><td>AGORA</td></tr>";
+						c.place(ht,"content_table");					
+					}
+					
+	            });
+	        });
+	    }
+	);
+
+	/*Tratando do carregamento das imagens*/
+	setInterval(function(){
+		require(["dojo/dom", "dojo/on", "dojo/request", "dojo/dom-form","dojo/json","dojo/_base/array","dojo/query","dojo","dojo/dom-construct","dojo/request/notify"],
+			    function(dom, on, request, domForm, parser, ArrayParser, qr,dojo,c,n){
+					n("start",function(){
+						c.empty("status");
+						c.place("<p>INICIANDO REQUISIÇÃO</p>","status");
+					});
+			
+					n("done",function(data){
+						c.empty("status");
+					});
+
+					n("error",function(error){
+						c.empty("status");
+						c.place("<p>FUDEU</p>","status");
+					});
+						
+						
+					c.destroy("content_table");
+					var outro = qr('#envia_mensagem  input[name="id_usuario_destinatario"]');
+					var id_outro = outro[0].value;
+
+					request.get("/chat/chatJson/"+id_outro,{
+						timeout: 3000,
+						handleAs: 'json'
+					}).then(function(data){
+						var json = parser.parse(data);
+						var html = "";
+
+						ArrayParser.forEach(json,function(v,i){
+							html += "<tr><td>" + json[i].usuario_remetente + "</td><td>" + json[i].usuario_destinatario + "</td><td>"+ json[i].mensagem + "</td><td>" + json[i].data_envio + "</td></tr>";
+						});
+						
+						c.create("tbody",{id: "content_table",innerHTML: html},dom.byId("registros"));
+					});
+	    		});
+		},6000);
+</script>

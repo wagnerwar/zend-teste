@@ -1,0 +1,78 @@
+
+<?php
+$form = $this->form;
+$form->setAttribute('action',$this->url('chat',array('action' => 'index')));
+$form->prepare();
+?>
+<h1>LOGIN</h1>
+
+<div id="status">
+<?php if(!empty($this->messages)){ ?>
+
+<h2><?php echo $this->messages[0]; ?></h2>
+
+<?php } ?>
+</div>
+
+<?php
+echo $this->form()->openTag($form);
+
+
+echo $this->formHidden($form->get('id_usuario'));
+
+echo $this->formLabel()->openTag($form->get('apelido'));
+echo $this->formRow($form->get('apelido'));
+echo $this->formElementErrors($form->get('apelido'));
+echo $this->formLabel()->closeTag($form->get('apelido'));
+
+echo $this->formLabel()->openTag($form->get('sexo'));
+echo $this->formRow($form->get('sexo'));
+echo $this->formElementErrors($form->get('sexo'));
+echo $this->formLabel()->closeTag($form->get('sexo'));
+
+echo $this->formLabel()->openTag($form->get('enviar'));
+echo $this->formSubmit($form->get('enviar'));
+echo $this->formLabel()->closeTag($form->get('enviar'));
+
+
+echo $this->form()->closeTag();
+
+?>
+<script>
+require(["dojo/dom", "dojo/on", "dojo/request", "dojo/dom-form","dojo/json","dojo/_base/array"],
+	    function(dom, on, request, domForm, parser, ArrayParser){
+	 
+	        var form = dom.byId('login');
+	 
+	        // Attach the onsubmit event handler of the form
+	        on(form, "submit", function(evt){
+	 
+	            // prevent the page from navigating after submit
+	            evt.stopPropagation();
+	            evt.preventDefault();
+	 
+	            // Post the data to the server
+	            request.post("chat/", {
+	                // Send the username and password
+	                data: domForm.toObject("login"),
+	                // Wait 2 seconds for a response
+	                timeout: 2000,
+	                handleAs: 'json'
+	 
+	            }).then(function(response){
+		            
+		            var json = parser.parse(response);
+		            if(json.status == 'NOK'){
+			            
+		            	var msg = "Deu merda. Reveja campos";
+
+			    	}else{
+						window.location = "/chat";
+			    	}
+					
+	                dom.byId('status').innerHTML = msg;
+	            });
+	        });
+	    }
+	);
+</script>

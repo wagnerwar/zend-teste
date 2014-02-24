@@ -1,0 +1,90 @@
+<?php echo $this->doctype();?>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+<?php 		
+
+	echo $this->headMeta(); // Will look like <meta charset="UTF-8">
+
+	echo $this->headTitle("TESTE DE CHAT");
+
+	
+?>
+<style>
+html, body {
+	height: 100%;
+	}
+	
+	#content{
+		position: relative;
+		background-color: #FFF;
+		padding-bottom: 30px;
+		padding-top: 100px;
+	}
+	
+	#tudo{
+		margin: 0 auto;
+		min-height: 100%;
+		position: relative;
+	}
+	
+	#rodape{
+	
+		position: absolute;
+		bottom: 0;
+		text-align: center;
+		width: 760px;
+	}
+	
+	label{
+	
+	float: left;
+	margin: 10px;
+	
+	}
+</style>
+</head>
+<body>
+	<div id="tudo">
+		 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		 	<div class="container">
+		 			  <div class="navbar-header">
+		 			  	<div class="collapse navbar-collapse">
+		 			  		<ul class="nav navbar-nav">
+		 			  			<li class="active"><a href="<?php echo $this->url('chat', array('action' => 'index')); ?>">USUÁRIOS</a></li>
+		 			  			<li class="active"><a href="<?php echo $this->url('chat',array('action' => 'deslogar') ); ?>">DESLOGAR</a></li>
+		 			  		</ul>
+		 			  	</div>
+		 			  </div>
+		 	</div>
+		</div>
+			<div class="container">
+				<div id="content">
+					 <script src="//ajax.googleapis.com/ajax/libs/dojo/1.9.2/dojo/dojo.js"
+            data-dojo-config="isDebug: 1,async: true"></script>
+            
+					<?php echo $this->content; ?>
+				</div>
+		 		
+		 	</div>
+		 	<div class="container">
+		 	<div id="rodape">
+		 			<strong>
+		 				Direitos reservados. Wagner
+		 			</strong>
+		 		</div>
+		 	</div>
+		 </div>
+
+</body>

@@ -1,0 +1,27 @@
+<h1>Listagem de usuários</h1>
+
+<?php if(isset($usuarios)) { ?>
+<table class="table table-bordered active">
+	<thead>
+		<tr>
+			<td>Apelido</td>
+			<td>Sexo</td>
+			<td>ID</td>
+			<td>Chat</td>
+		</tr>
+	</thead>
+	<tbody>
+	<?php foreach($usuarios as $u){ ?>
+	<?php if($u->id_usuario != $session->usuario) {?>
+		<tr>
+			<td><?php echo $u->apelido; ?></td>
+			<td><?php echo $u->sexo; ?></td>
+			<td><?php echo $u->id_usuario; ?></td>
+			<td><a href="<?php echo $this->url("chat",array('action' => 'chat','id' => $u->id_usuario));?>"><button type="button" class="btn btn-primary">Chat</button></a></td>
+		</tr>
+		<?php } } ?>
+	</tbody>
+</table>
+<?php }else{ ?>
+	<h2>NINGUÉM AQUI</h2>
+<?php }?>
